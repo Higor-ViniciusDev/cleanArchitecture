@@ -1,0 +1,26 @@
+syntax = "proto3";
+
+package pb;
+
+option go_package = "internal/infra/grpc/proto/pb";
+
+message OrdemInput {
+  string id = 1;
+  float taxa = 2;
+  float preco = 3;
+}
+
+message OrdemOutput{
+  string id = 1;
+  float taxa = 2;
+  float preco = 3;
+  float valor = 4;
+}
+
+message CriarOrdemRequest {
+  OrdemInput ordem = 1;
+}
+
+service OrdemService {
+  rpc CriarOrdem(CriarOrdemRequest) returns (OrdemOutput) {}
+}

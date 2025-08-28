@@ -3,10 +3,10 @@ package entity
 import "errors"
 
 type Ordem struct {
-	ID    string
-	Preco float64
-	Taxa  float64
-	Valor float64
+	ID    string  `json:"id"`
+	Preco float64 `json:"preco"`
+	Taxa  float64 `json:"taxa"`
+	Valor float64 `json:"valor"`
 }
 
 func NovaOrdem(id string, preco, taxa float64) (*Ordem, error) {
