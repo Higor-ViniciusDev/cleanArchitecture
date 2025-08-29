@@ -1,0 +1,16 @@
+type Ordem {
+  id: String!
+  preco: Float!
+  taxa: Float!
+  valor: Float
+}
+
+input NovaOrdem {
+  id: String!
+  preco: Float!
+  taxa: Float!
+}
+
+type Mutation {
+  criarOrdem(input: NovaOrdem!): Ordem!
+}

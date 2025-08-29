@@ -13,16 +13,16 @@ func NewCreateOrdemUseCase(OrderRepository entity.RepositoryOrdemInterface) *Ord
 }
 
 type OrdemInputDTO struct {
-	ID    string
-	Preco float64
-	Taxa  float64
+	ID    string  `json:"id"`
+	Preco float64 `json:"preco"`
+	Taxa  float64 `json:"taxa"`
 }
 
 type OrdemOutputDTO struct {
-	ID    string
-	Preco float64
-	Taxa  float64
-	Valor float64
+	ID    string  `json:"id"`
+	Preco float64 `json:"preco"`
+	Taxa  float64 `json:"taxa"`
+	Valor float64 `json:"valor"`
 }
 
 func (u *OrdemUseCase) Execute(input OrdemInputDTO) (*OrdemOutputDTO, error) {
