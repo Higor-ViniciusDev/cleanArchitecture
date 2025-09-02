@@ -6,8 +6,11 @@ package graph
 
 import (
 	"github.com/Higor-ViniciusDev/CleanArchiteture/internal/entity"
+	"github.com/Higor-ViniciusDev/CleanArchiteture/pkg/events"
 )
 
 type Resolver struct {
-	Repository entity.RepositoryOrdemInterface
+	Repository         entity.RepositoryOrdemInterface
+	EventoOrdemCreated events.EventoInterface
+	EventoDisparador   events.EventoDisparadorInterface
 }

@@ -14,7 +14,7 @@ import (
 
 // CriarOrdem is the resolver for the criarOrdem field.
 func (r *mutationResolver) CriarOrdem(ctx context.Context, input model.NovaOrdem) (*model.Ordem, error) {
-	useCase := usecase.NewCreateOrdemUseCase(r.Repository)
+	useCase := usecase.NewCreateOrdemUseCase(r.Repository, r.EventoOrdemCreated, r.EventoDisparador)
 
 	dtoInput := usecase.OrdemInputDTO{
 		ID:    input.ID,

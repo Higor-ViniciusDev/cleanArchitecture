@@ -43,6 +43,6 @@ func (s *WebServer) StartWebServer() {
 		s.Rotas.Method(info.Method, path, info.Handler)
 	}
 
-	fmt.Println("Servidor rodando na porta 8080")
+	fmt.Println("Servidor rodando na porta ", s.WebPortStart)
 	http.ListenAndServe(s.WebPortStart, s.Rotas)
 }

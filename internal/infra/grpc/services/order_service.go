@@ -6,17 +6,20 @@ import (
 	"github.com/Higor-ViniciusDev/CleanArchiteture/internal/entity"
 	"github.com/Higor-ViniciusDev/CleanArchiteture/internal/infra/grpc/proto/pb"
 	"github.com/Higor-ViniciusDev/CleanArchiteture/internal/usecase"
+	"github.com/Higor-ViniciusDev/CleanArchiteture/pkg/events"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 )
 
 type OrdemService struct {
 	pb.UnimplementedOrdemServiceServer
-	repository entity.RepositoryOrdemInterface
+	Repository         entity.RepositoryOrdemInterface
+	EventoOrdemCreated events.EventoInterface
+	EventoDisparador   events.EventoDisparadorInterface
 }
 
 func (c *OrdemService) CriarOrdem(ctx context.Context, in *pb.CriarOrdemRequest) (*pb.OrdemOutput, error) {
-	orderusecase := usecase.NewCreateOrdemUseCase(c.repository)
+	orderusecase := usecase.NewCreateOrdemUseCase(c.Repository, c.EventoOrdemCreated, c.EventoDisparador)
 
 	dto := usecase.OrdemInputDTO{
 		ID:    in.Ordem.Id,
@@ -37,8 +40,10 @@ func (c *OrdemService) CriarOrdem(ctx context.Context, in *pb.CriarOrdemRequest)
 	}, nil
 }
 
-func NewOrdemService(repository entity.RepositoryOrdemInterface) *OrdemService {
+func NewOrdemService(repository entity.RepositoryOrdemInterface, EventoOrdemCreated events.EventoInterface, EventoDisparador events.EventoDisparadorInterface) *OrdemService {
 	return &OrdemService{
-		repository: repository,
+		Repository:         repository,
+		EventoOrdemCreated: EventoOrdemCreated,
+		EventoDisparador:   EventoDisparador,
 	}
 }

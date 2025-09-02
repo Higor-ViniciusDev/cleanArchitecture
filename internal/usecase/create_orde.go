@@ -1,14 +1,21 @@
 package usecase
 
-import "github.com/Higor-ViniciusDev/CleanArchiteture/internal/entity"
+import (
+	"github.com/Higor-ViniciusDev/CleanArchiteture/internal/entity"
+	"github.com/Higor-ViniciusDev/CleanArchiteture/pkg/events"
+)
 
 type OrdemUseCase struct {
-	repository entity.RepositoryOrdemInterface
+	repository         entity.RepositoryOrdemInterface
+	eventoOrdemCreated events.EventoInterface
+	eventoDisparador   events.EventoDisparadorInterface
 }
 
-func NewCreateOrdemUseCase(OrderRepository entity.RepositoryOrdemInterface) *OrdemUseCase {
+func NewCreateOrdemUseCase(OrderRepository entity.RepositoryOrdemInterface, EventoOrdemCreated events.EventoInterface, DisparadorEvento events.EventoDisparadorInterface) *OrdemUseCase {
 	return &OrdemUseCase{
-		repository: OrderRepository,
+		repository:         OrderRepository,
+		eventoOrdemCreated: EventoOrdemCreated,
+		eventoDisparador:   DisparadorEvento,
 	}
 }
 
@@ -41,10 +48,15 @@ func (u *OrdemUseCase) Execute(input OrdemInputDTO) (*OrdemOutputDTO, error) {
 		return nil, err
 	}
 
-	return &OrdemOutputDTO{
+	dtoRetorno := &OrdemOutputDTO{
 		ID:    ordem.ID,
 		Preco: ordem.Preco,
 		Taxa:  ordem.Taxa,
 		Valor: ordem.Valor,
-	}, nil
+	}
+
+	u.eventoOrdemCreated.SetValues(dtoRetorno)
+	u.eventoDisparador.Disparador(u.eventoOrdemCreated)
+
+	return dtoRetorno, nil
 }

@@ -6,15 +6,20 @@ import (
 
 	"github.com/Higor-ViniciusDev/CleanArchiteture/internal/entity"
 	"github.com/Higor-ViniciusDev/CleanArchiteture/internal/usecase"
+	"github.com/Higor-ViniciusDev/CleanArchiteture/pkg/events"
 )
 
 type OrdensHandler struct {
-	Repository entity.RepositoryOrdemInterface
+	Repository         entity.RepositoryOrdemInterface
+	EventoOrdemCreated events.EventoInterface
+	EventoDisparador   events.EventoDisparadorInterface
 }
 
-func NewOrdensHandler(repository entity.RepositoryOrdemInterface) *OrdensHandler {
+func NewOrdensHandler(repository entity.RepositoryOrdemInterface, EventoOrdemCreated events.EventoInterface, EventoDisparador events.EventoDisparadorInterface) *OrdensHandler {
 	return &OrdensHandler{
-		Repository: repository,
+		Repository:         repository,
+		EventoOrdemCreated: EventoOrdemCreated,
+		EventoDisparador:   EventoDisparador,
 	}
 }
 
@@ -27,7 +32,7 @@ func (o *OrdensHandler) CriarOrdem(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	useCase := usecase.NewCreateOrdemUseCase(o.Repository)
+	useCase := usecase.NewCreateOrdemUseCase(o.Repository, o.EventoOrdemCreated, o.EventoDisparador)
 
 	outputDTO, err := useCase.Execute(dto)
 	if err != nil {
