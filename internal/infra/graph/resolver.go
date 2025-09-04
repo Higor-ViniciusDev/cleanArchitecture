@@ -5,12 +5,9 @@ package graph
 // It serves as dependency injection for your app, add any dependencies you require here.
 
 import (
-	"github.com/Higor-ViniciusDev/CleanArchiteture/internal/entity"
-	"github.com/Higor-ViniciusDev/CleanArchiteture/pkg/events"
+	"github.com/Higor-ViniciusDev/CleanArchiteture/internal/usecase"
 )
 
 type Resolver struct {
-	Repository         entity.RepositoryOrdemInterface
-	EventoOrdemCreated events.EventoInterface
-	EventoDisparador   events.EventoDisparadorInterface
+	UseCaseOrder usecase.OrdemUseCase
 }

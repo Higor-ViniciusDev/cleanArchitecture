@@ -1,2 +1,2 @@
 executaProjeto:
-	go run cmd/SistemaDeOrdem/main.go
+	go run cmd/SistemaDeOrdem .

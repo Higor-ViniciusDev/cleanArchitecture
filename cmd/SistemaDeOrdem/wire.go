@@ -1,3 +1,6 @@
+//go:build wireinject
+// +build wireinject
+
 package main
 
 import (
@@ -6,6 +9,7 @@ import (
 	"github.com/Higor-ViniciusDev/CleanArchiteture/internal/entity"
 	"github.com/Higor-ViniciusDev/CleanArchiteture/internal/events"
 	"github.com/Higor-ViniciusDev/CleanArchiteture/internal/infra/database"
+	"github.com/Higor-ViniciusDev/CleanArchiteture/internal/infra/web"
 	"github.com/Higor-ViniciusDev/CleanArchiteture/internal/usecase"
 	pkgEvento "github.com/Higor-ViniciusDev/CleanArchiteture/pkg/events"
 	"github.com/google/wire"
@@ -16,19 +20,19 @@ var setOrderRepositoryDependency = wire.NewSet(
 	wire.Bind(new(entity.RepositoryOrdemInterface), new(*database.OrdemRepository)),
 )
 
-var setEventDispatcherDependency = wire.NewSet(
-	pkgEvento.NewEventoDisparador,
-	events.NewOrdemCreated,
-	wire.Bind(new(pkgEvento.EventoInterface), new(*events.OrdemCreated)),
-	wire.Bind(new(pkgEvento.EventoDisparadorInterface), new(*pkgEvento.EventoDisparador)),
-)
-
 var setOrderCreatedEvent = wire.NewSet(
 	events.NewOrdemCreated,
 	wire.Bind(new(pkgEvento.EventoInterface), new(*events.OrdemCreated)),
 )
 
-func NewCreateOrdemUseCase(db *sql.DB, disparador *pkgEvento.EventoDisparador) *usecase.OrdemUseCase {
+var setDisparadorEvento = wire.NewSet(
+	pkgEvento.NewEventoDisparador,
+	events.NewOrdemCreated,
+	wire.Bind(new(pkgEvento.EventoDisparadorInterface), new(*pkgEvento.EventoDisparador)),
+	wire.Bind(new(pkgEvento.EventoInterface), new(*events.OrdemCreated)),
+)
+
+func NewCreateOrdemUseCaseInje(db *sql.DB, disparador pkgEvento.EventoDisparadorInterface) *usecase.OrdemUseCase {
 	wire.Build(
 		setOrderRepositoryDependency,
 		setOrderCreatedEvent,
@@ -38,6 +42,19 @@ func NewCreateOrdemUseCase(db *sql.DB, disparador *pkgEvento.EventoDisparador) *
 	return &usecase.OrdemUseCase{}
 }
 
-// func NewCreateHandlerWeb(db *sql.DB, disparador *pkgEvento.EventoDisparador) *web.OrdensHandler {
-// 	wire.B
-// }
+func NewListAllOrdemUseCaseInje(db *sql.DB) *usecase.ListOrdemUseCase {
+	wire.Build(
+		setOrderRepositoryDependency,
+		usecase.NewListOrdemUseCase,
+	)
+
+	return &usecase.ListOrdemUseCase{}
+}
+
+func NewWebOrdersHandleInje(createUseCase *usecase.OrdemUseCase, listAllUseCase *usecase.ListOrdemUseCase) *web.OrdensHandler {
+	wire.Build(
+		web.NewOrdensHandler,
+	)
+
+	return &web.OrdensHandler{}
+}

@@ -14,15 +14,13 @@ import (
 
 // CriarOrdem is the resolver for the criarOrdem field.
 func (r *mutationResolver) CriarOrdem(ctx context.Context, input model.NovaOrdem) (*model.Ordem, error) {
-	useCase := usecase.NewCreateOrdemUseCase(r.Repository, r.EventoOrdemCreated, r.EventoDisparador)
-
 	dtoInput := usecase.OrdemInputDTO{
 		ID:    input.ID,
 		Preco: input.Preco,
 		Taxa:  input.Taxa,
 	}
 
-	ordem, err := useCase.Execute(dtoInput)
+	ordem, err := r.UseCaseOrder.Execute(dtoInput)
 	if err != nil {
 		return nil, fmt.Errorf("failed to create ordem: %w", err)
 	}

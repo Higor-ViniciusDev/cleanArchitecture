@@ -4,9 +4,9 @@ import (
 	"github.com/spf13/viper"
 )
 
-var cfg *conf
+var cfg *Conf
 
-type conf struct {
+type Conf struct {
 	DBDriver           string `mapstructure:"DB_DRIVER"`
 	DBHost             string `mapstructure:"DB_HOST"`
 	DBPorta            string `mapstructure:"DB_PORTA"`
@@ -16,15 +16,17 @@ type conf struct {
 	WebServerPorta     string `mapstructure:"WEB_SERVER_PORTA"`
 	GRPCServerPorta    string `mapstructure:"GRPC_SERVER_PORTA"`
 	GraphQLServerPorta string `mapstructure:"GRAPHQL_SERVER_PORTA"`
+	RabbitMQHost       string `mapstructure:"RABBITMQ_HOST"`
+	RabbitMQPort       string `mapstructure:"RABBITMQ_PORT"`
+	RabbitMQUser       string `mapstructure:"RABBITMQ_USER"`
+	RabbitMQPass       string `mapstructure:"RABBITMQ_PASS"`
 }
 
-func LoadConfig(path string) (*conf, error) {
-	// cfg = &conf{}
-
+func LoadConfig(path string) (*Conf, error) {
 	viper.SetConfigName("app_config")
 	viper.SetConfigType("env")
 	viper.AddConfigPath(path)
-	viper.SetConfigFile(path + "/.env")
+	viper.SetConfigFile(".env")
 	viper.AutomaticEnv()
 
 	err := viper.ReadInConfig()

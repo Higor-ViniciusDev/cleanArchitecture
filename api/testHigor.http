@@ -1,4 +1,11 @@
 
-POST http://localhost:8000/higor HTTP/1.1
+GET http://localhost:8000/order HTTP/1.1
+Host: localhost:8000
+Content-Type: application/json
+Accept: application/xml
+
+
+
+GET http://localhost:8000/order HTTP/1.1
 Host: localhost:8000
 Content-Type: application/json
