@@ -40,6 +40,7 @@ type Config struct {
 
 type ResolverRoot interface {
 	Mutation() MutationResolver
+	Query() QueryResolver
 }
 
 type DirectiveRoot struct {
@@ -58,11 +59,15 @@ type ComplexityRoot struct {
 	}
 
 	Query struct {
+		ListOrders func(childComplexity int) int
 	}
 }
 
 type MutationResolver interface {
 	CriarOrdem(ctx context.Context, input model.NovaOrdem) (*model.Ordem, error)
+}
+type QueryResolver interface {
+	ListOrders(ctx context.Context) ([]*model.Ordem, error)
 }
 
 type executableSchema struct {
@@ -123,6 +128,13 @@ func (e *executableSchema) Complexity(ctx context.Context, typeName, field strin
 		}
 
 		return e.complexity.Ordem.Valor(childComplexity), true
+
+	case "Query.ListOrders":
+		if e.complexity.Query.ListOrders == nil {
+			break
+		}
+
+		return e.complexity.Query.ListOrders(childComplexity), true
 
 	}
 	return 0, false
@@ -556,6 +568,60 @@ func (ec *executionContext) fieldContext_Ordem_valor(_ context.Context, field gr
 		IsResolver: false,
 		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
 			return nil, errors.New("field of type Float does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _Query_ListOrders(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_Query_ListOrders(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.Query().ListOrders(rctx)
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.([]*model.Ordem)
+	fc.Result = res
+	return ec.marshalNOrdem2ᚕᚖgithubᚗcomᚋHigorᚑViniciusDevᚋCleanArchitetureᚋinternalᚋinfraᚋgraphᚋmodelᚐOrdemᚄ(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_Query_ListOrders(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Query",
+		Field:      field,
+		IsMethod:   true,
+		IsResolver: true,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			switch field.Name {
+			case "id":
+				return ec.fieldContext_Ordem_id(ctx, field)
+			case "preco":
+				return ec.fieldContext_Ordem_preco(ctx, field)
+			case "taxa":
+				return ec.fieldContext_Ordem_taxa(ctx, field)
+			case "valor":
+				return ec.fieldContext_Ordem_valor(ctx, field)
+			}
+			return nil, fmt.Errorf("no field named %q was found under type Ordem", field.Name)
 		},
 	}
 	return fc, nil
@@ -2811,6 +2877,28 @@ func (ec *executionContext) _Query(ctx context.Context, sel ast.SelectionSet) gr
 		switch field.Name {
 		case "__typename":
 			out.Values[i] = graphql.MarshalString("Query")
+		case "ListOrders":
+			field := field
+
+			innerFunc := func(ctx context.Context, fs *graphql.FieldSet) (res graphql.Marshaler) {
+				defer func() {
+					if r := recover(); r != nil {
+						ec.Error(ctx, ec.Recover(ctx, r))
+					}
+				}()
+				res = ec._Query_ListOrders(ctx, field)
+				if res == graphql.Null {
+					atomic.AddUint32(&fs.Invalids, 1)
+				}
+				return res
+			}
+
+			rrm := func(ctx context.Context) graphql.Marshaler {
+				return ec.OperationContext.RootResolverMiddleware(ctx,
+					func(ctx context.Context) graphql.Marshaler { return innerFunc(ctx, out) })
+			}
+
+			out.Concurrently(i, func(ctx context.Context) graphql.Marshaler { return rrm(innerCtx) })
 		case "__type":
 			out.Values[i] = ec.OperationContext.RootResolverMiddleware(innerCtx, func(ctx context.Context) (res graphql.Marshaler) {
 				return ec._Query___type(ctx, field)
@@ -3216,6 +3304,50 @@ func (ec *executionContext) unmarshalNNovaOrdem2githubᚗcomᚋHigorᚑViniciusD
 
 func (ec *executionContext) marshalNOrdem2githubᚗcomᚋHigorᚑViniciusDevᚋCleanArchitetureᚋinternalᚋinfraᚋgraphᚋmodelᚐOrdem(ctx context.Context, sel ast.SelectionSet, v model.Ordem) graphql.Marshaler {
 	return ec._Ordem(ctx, sel, &v)
+}
+
+func (ec *executionContext) marshalNOrdem2ᚕᚖgithubᚗcomᚋHigorᚑViniciusDevᚋCleanArchitetureᚋinternalᚋinfraᚋgraphᚋmodelᚐOrdemᚄ(ctx context.Context, sel ast.SelectionSet, v []*model.Ordem) graphql.Marshaler {
+	ret := make(graphql.Array, len(v))
+	var wg sync.WaitGroup
+	isLen1 := len(v) == 1
+	if !isLen1 {
+		wg.Add(len(v))
+	}
+	for i := range v {
+		i := i
+		fc := &graphql.FieldContext{
+			Index:  &i,
+			Result: &v[i],
+		}
+		ctx := graphql.WithFieldContext(ctx, fc)
+		f := func(i int) {
+			defer func() {
+				if r := recover(); r != nil {
+					ec.Error(ctx, ec.Recover(ctx, r))
+					ret = nil
+				}
+			}()
+			if !isLen1 {
+				defer wg.Done()
+			}
+			ret[i] = ec.marshalNOrdem2ᚖgithubᚗcomᚋHigorᚑViniciusDevᚋCleanArchitetureᚋinternalᚋinfraᚋgraphᚋmodelᚐOrdem(ctx, sel, v[i])
+		}
+		if isLen1 {
+			f(i)
+		} else {
+			go f(i)
+		}
+
+	}
+	wg.Wait()
+
+	for _, e := range ret {
+		if e == graphql.Null {
+			return graphql.Null
+		}
+	}
+
+	return ret
 }
 
 func (ec *executionContext) marshalNOrdem2ᚖgithubᚗcomᚋHigorᚑViniciusDevᚋCleanArchitetureᚋinternalᚋinfraᚋgraphᚋmodelᚐOrdem(ctx context.Context, sel ast.SelectionSet, v *model.Ordem) graphql.Marshaler {

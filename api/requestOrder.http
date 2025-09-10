@@ -1,0 +1,57 @@
+
+# Criar ordem - REST
+POST http://localhost:8000/order HTTP/1.1
+Host: localhost:8000
+Content-Type: application/json
+
+{
+  "id" : "testeNovo",
+  "taxa": 0.5,
+  "preco": 100.0
+}
+
+# ------------------------------------------------------------------------------
+###
+# Listar todas ordens - XML
+GET http://localhost:8000/order HTTP/1.1
+Host: localhost:8000
+Content-Type: application/json
+Accept: application/xml
+# 200 ok
+# ------------------------------------------------------------------------------
+
+###
+# Listar todas ordens - REST
+GET http://localhost:8000/order HTTP/1.1
+Host: localhost:8000
+Content-Type: application/json
+# ------------------------------------------------------------------------------
+
+###
+# Listar todas ordens - GraphQL
+POST http://localhost:8080/query
+Content-Type: application/json
+X-REQUEST-TYPE: GraphQL
+
+query listarOrdens {
+  ListOrders{
+    id,
+    taxa, preco, valor
+  }
+}
+# ------------------------------------------------------------------------------
+
+###
+# Criar ordem - GraphQL
+POST http://localhost:8080/query
+Content-Type: application/json
+X-REQUEST-TYPE: GraphQL
+
+mutation criarOrdem {
+  criarOrdem(input: {id: "teste2", taxa: 0.5, preco: 100.0}) {
+    id,
+    taxa,
+    preco,
+    valor
+  }
+}

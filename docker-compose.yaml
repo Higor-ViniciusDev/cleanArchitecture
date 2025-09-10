@@ -1,8 +1,47 @@
 services:
+  migrate:
+    image: migrate/migrate
+    container_name: migrate
+    networks:
+      - appCleanArchitecture
+    volumes:
+      - ./migrations:/migrations
+    env_file:
+      - ./cmd/SistemaDeOrdem/app_config.env
+    command: [
+      "-path", "/migrations",
+      "-database", "mysql://${DB_USUARIO}:${DB_SENHA}@tcp(${DB_HOST}:${DB_PORTA})/${DB_NOME}",
+      "up"
+    ]
+    depends_on:
+      - mysql
+
+  app:
+    build: .
+    container_name: app
+    restart: always
+    networks:
+      - appCleanArchitecture
+    working_dir: /go/src/app
+    volumes:
+      - .:/go/src/app
+    ports:
+      - 8080:8080
+      - 8000:8000
+      - 50051:50051
+    env_file:
+      - ./cmd/SistemaDeOrdem/app_config.env
+    depends_on:
+      - mysql
+      - rabbitmq
+      - migrate
+
   mysql:
     image: mysql:5.7
     container_name: mysql
     restart: always
+    networks:
+      - appCleanArchitecture
     environment:
       MYSQL_ROOT_PASSWORD: root
       MYSQL_DATABASE: ordens
@@ -16,9 +55,15 @@ services:
     image: rabbitmq:3-management
     container_name: rabbitmq
     restart: always
+    networks:
+      - appCleanArchitecture
     ports:
       - 5672:5672
       - 15672:15672
     environment:
       RABBITMQ_DEFAULT_USER: guest
       RABBITMQ_DEFAULT_PASS: guest
+
+networks:
+  appCleanArchitecture:
+    driver: bridge

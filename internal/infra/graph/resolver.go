@@ -9,5 +9,6 @@ import (
 )
 
 type Resolver struct {
-	UseCaseOrder usecase.OrdemUseCase
+	UseCaseOrder  usecase.OrdemUseCase
+	ListCaseOrder usecase.ListOrdemUseCase
 }

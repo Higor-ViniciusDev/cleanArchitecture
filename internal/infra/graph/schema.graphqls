@@ -14,3 +14,7 @@ input NovaOrdem {
 type Mutation {
   criarOrdem(input: NovaOrdem!): Ordem!
 }
+
+type Query {
+  ListOrders: [Ordem!]!
+}

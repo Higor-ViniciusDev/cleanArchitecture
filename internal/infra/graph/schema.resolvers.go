@@ -33,7 +33,32 @@ func (r *mutationResolver) CriarOrdem(ctx context.Context, input model.NovaOrdem
 	}, nil
 }
 
+// ListOrders is the resolver for the ListOrders field.
+func (r *queryResolver) ListOrders(ctx context.Context) ([]*model.Ordem, error) {
+	ordens, err := r.ListCaseOrder.Execute()
+
+	if err != nil {
+		return nil, fmt.Errorf("Falha ao listar todas ações: %w", err)
+	}
+
+	var result []*model.Ordem
+	for _, ordem := range ordens {
+		result = append(result, &model.Ordem{
+			ID:    ordem.ID,
+			Preco: ordem.Preco,
+			Taxa:  ordem.Taxa,
+			Valor: ordem.Valor,
+		})
+	}
+
+	return result, nil
+}
+
 // Mutation returns MutationResolver implementation.
 func (r *Resolver) Mutation() MutationResolver { return &mutationResolver{r} }
 
+// Query returns QueryResolver implementation.
+func (r *Resolver) Query() QueryResolver { return &queryResolver{r} }
+
 type mutationResolver struct{ *Resolver }
+type queryResolver struct{ *Resolver }

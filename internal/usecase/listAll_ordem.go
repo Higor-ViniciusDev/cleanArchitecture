@@ -1,8 +1,6 @@
 package usecase
 
 import (
-	"context"
-
 	"github.com/Higor-ViniciusDev/CleanArchiteture/internal/entity"
 )
 
@@ -16,7 +14,7 @@ func NewListOrdemUseCase(ordemRepo entity.RepositoryOrdemInterface) *ListOrdemUs
 	}
 }
 
-func (uc *ListOrdemUseCase) Execute(ctx context.Context) ([]OrdemOutputDTO, error) {
+func (uc *ListOrdemUseCase) Execute() ([]OrdemOutputDTO, error) {
 	ordens, err := uc.ordemRepository.BuscarTodas()
 	if err != nil {
 		return nil, err

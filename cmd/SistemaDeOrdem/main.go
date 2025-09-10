@@ -27,7 +27,7 @@ import (
 )
 
 func main() {
-	configs, err := configsPackge.LoadConfig(".")
+	configs, err := configsPackge.LoadConfig("./cmd/SistemaDeOrdem/")
 	if err != nil {
 		panic(err)
 	}
@@ -52,12 +52,12 @@ func main() {
 
 	webOrdersHandle := NewWebOrdersHandleInje(createOrderUseCase, listAllOrderUseCase)
 	webServeR := webserver.NewWebServer(fmt.Sprintf(":%s", configs.WebServerPorta))
-	webServeR.AdicionarHandle("/ordens", webOrdersHandle.CriarOrdem, "POST")
+	webServeR.AdicionarHandle("/order", webOrdersHandle.CriarOrdem, "POST")
 	webServeR.AdicionarHandle("/order", webOrdersHandle.ListarOrdens, "GET")
 
 	go webServeR.StartWebServer()
 
-	ordensService := services.NewOrderService(*createOrderUseCase)
+	ordensService := services.NewOrderService(*createOrderUseCase, *listAllOrderUseCase)
 
 	grpcServe := grpc.NewServer()
 	pb.RegisterOrdemServiceServer(grpcServe, ordensService)
@@ -73,7 +73,8 @@ func main() {
 	go grpcServe.Serve(listen)
 
 	srv := handler.New(graph.NewExecutableSchema(graph.Config{Resolvers: &graph.Resolver{
-		UseCaseOrder: *createOrderUseCase,
+		UseCaseOrder:  *createOrderUseCase,
+		ListCaseOrder: *listAllOrderUseCase,
 	}}))
 
 	srv.AddTransport(transport.Options{})

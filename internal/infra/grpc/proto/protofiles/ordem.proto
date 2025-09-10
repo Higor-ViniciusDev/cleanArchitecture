@@ -4,6 +4,8 @@ package pb;
 
 option go_package = "internal/infra/grpc/proto/pb";
 
+message Blank {}
+
 message OrdemInput {
   string id = 1;
   float taxa = 2;
@@ -21,6 +23,11 @@ message CriarOrdemRequest {
   OrdemInput ordem = 1;
 }
 
+message ListarOrdensResponse {
+  repeated OrdemOutput ordens = 1;
+}
+
 service OrdemService {
   rpc CriarOrdem(CriarOrdemRequest) returns (OrdemOutput) {}
+  rpc ListOrders(Blank) returns (ListarOrdensResponse) {}
 }

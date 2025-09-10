@@ -45,10 +45,15 @@ func (o *OrdensHandler) CriarOrdem(w http.ResponseWriter, r *http.Request) {
 }
 
 func (h *OrdensHandler) ListarOrdens(w http.ResponseWriter, r *http.Request) {
-	outputDTO, err := h.ListAllUseCase.Execute(r.Context())
+	outputDTO, err := h.ListAllUseCase.Execute()
 
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+	//Tratamento para lista vazia de ordens
+	if len(outputDTO) == 0 {
+		writeJSON(w, http.StatusOK, []usecase.OrdemOutputDTO{})
 		return
 	}
 

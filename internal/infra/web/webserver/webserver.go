@@ -15,14 +15,14 @@ type HandlerInfo struct {
 
 type WebServer struct {
 	Rotas        chi.Router
-	Handlers     map[string]HandlerInfo // path -> HandlerInfo (method + handler)
+	Handlers     map[string][]HandlerInfo // path -> HandlerInfo (method + handler)
 	WebPortStart string
 }
 
 func NewWebServer(PortalWeb string) *WebServer {
 	return &WebServer{
 		Rotas:        chi.NewRouter(),
-		Handlers:     make(map[string]HandlerInfo),
+		Handlers:     make(map[string][]HandlerInfo),
 		WebPortStart: PortalWeb,
 	}
 }
@@ -30,19 +30,22 @@ func NewWebServer(PortalWeb string) *WebServer {
 // Registrar Handlers no Router e path
 // Basicamente o metodo vai pegar um função criada no handlers ordens e registrar no path x passado por parametro
 func (o *WebServer) AdicionarHandle(RotaWeb string, handlerFunc http.HandlerFunc, method string) {
-	o.Handlers[RotaWeb] = HandlerInfo{
+	o.Handlers[RotaWeb] = append(o.Handlers[RotaWeb], HandlerInfo{
 		Method:  method,
 		Handler: handlerFunc,
-	}
+	})
 }
 
 // Metodo que inicia o server na porta configura quando inciado a instancia da struct WebServer
 func (s *WebServer) StartWebServer() {
 	s.Rotas.Use(middleware.Logger)
 	for path, info := range s.Handlers {
-		s.Rotas.Method(info.Method, path, info.Handler)
+		for _, infoRotas := range info {
+			fmt.Println("\nRegistrando Rotas:", infoRotas.Method, path)
+			s.Rotas.Method(infoRotas.Method, path, infoRotas.Handler)
+		}
 	}
 
-	fmt.Println("Servidor rodando na porta ", s.WebPortStart)
+	fmt.Println("\nServidor rodando na porta ", s.WebPortStart)
 	http.ListenAndServe(s.WebPortStart, s.Rotas)
 }
