@@ -33,7 +33,7 @@ func main() {
 	}
 
 	//"root:root@tcp(localhost:3306)/ordens"
-	db, err := sql.Open(configs.DBDriver, fmt.Sprintf("%s:%s@tcp(%s:%s)/%s", configs.DBUsuario, configs.DBSenha, configs.DBHost, configs.DBPorta, configs.DBNome))
+	db := getConnectionDB(configs)
 
 	if err != nil {
 		panic(err)
@@ -106,4 +106,14 @@ func getRabbitMqChannel(configs *configsPackge.Conf) *amqp.Channel {
 		panic(err)
 	}
 	return ch
+}
+
+func getConnectionDB(configs *configsPackge.Conf) *sql.DB {
+	db, err := sql.Open(configs.DBDriver, fmt.Sprintf("%s:%s@tcp(%s:%s)/%s", configs.DBUsuario, configs.DBSenha, configs.DBHost, configs.DBPorta, configs.DBNome))
+
+	if err != nil {
+		panic(err)
+	}
+
+	return db
 }

@@ -1,18 +1,33 @@
 services:
-  migrate:
-    image: migrate/migrate
-    container_name: migrate
+  mysql:
+    image: mysql:5.7
+    container_name: mysql
+    restart: always
     networks:
       - appCleanArchitecture
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: ordens
+    ports:
+      - 3306:3306
     volumes:
-      - ./migrations:/migrations
+      - .docker/mysql:/var/lib/mysql
+  
+  migrate:
+    image: migrate/migrate
+    restart: on-failure
+    container_name: migrate
     env_file:
       - ./cmd/SistemaDeOrdem/app_config.env
+    networks:
+      - appCleanArchitecture
     command: [
       "-path", "/migrations",
       "-database", "mysql://${DB_USUARIO}:${DB_SENHA}@tcp(${DB_HOST}:${DB_PORTA})/${DB_NOME}",
       "up"
     ]
+    volumes:
+      - ./migrations:/migrations
     depends_on:
       - mysql
 
@@ -35,21 +50,6 @@ services:
       - mysql
       - rabbitmq
       - migrate
-
-  mysql:
-    image: mysql:5.7
-    container_name: mysql
-    restart: always
-    networks:
-      - appCleanArchitecture
-    environment:
-      MYSQL_ROOT_PASSWORD: root
-      MYSQL_DATABASE: ordens
-      MYSQL_PASSWORD: root
-    ports:
-      - 3306:3306
-    volumes:
-      - .docker/mysql:/var/lib/mysql
 
   rabbitmq:
     image: rabbitmq:3-management

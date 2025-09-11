@@ -18,9 +18,6 @@ RUN go install google.golang.org/protobuf/cmd/protoc-gen-go@latest && \
 # Instala gqlgen
 RUN go install github.com/99designs/gqlgen@latest
 
-# Copia o restante do código para dentro do container
-COPY . .
-
 # Ajusta o diretório de trabalho para dentro do app
 WORKDIR /go/src/app
 
