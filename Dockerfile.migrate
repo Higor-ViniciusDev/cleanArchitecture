@@ -1,0 +1,15 @@
+# Dockerfile.migrate
+FROM migrate/migrate:latest
+
+# Define o diretório de trabalho
+WORKDIR /migrations
+
+# Copia as migrations para dentro da imagem
+COPY ./migrations /migrations
+
+# Copia o .env para dentro da imagem (opcional, caso queira embutir)
+# COPY ./cmd/SistemaDeOrdem/.env /migrations/.env
+
+# Script de entrypoint que expande variáveis e roda migrate
+# Isso garante que variáveis do env_file sejam lidas
+ENTRYPOINT [ "sh", "-c", "migrate -path=/migrations -database \"mysql://${DB_USUARIO}:${DB_SENHA}@tcp(${DB_HOST}:${DB_PORTA})/${DB_NOME}\" up" ]

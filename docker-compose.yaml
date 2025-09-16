@@ -14,23 +14,19 @@ services:
       - .docker/mysql:/var/lib/mysql
   
   migrate:
-    image: migrate/migrate
-    restart: on-failure
+    build:
+      context: .
+      dockerfile: Dockerfile.migrate
     container_name: migrate
+    restart: on-failure
     env_file:
-      - ./cmd/SistemaDeOrdem/app_config.env
+      - ./cmd/SistemaDeOrdem/.env
     networks:
       - appCleanArchitecture
-    command: [
-      "-path", "/migrations",
-      "-database", "mysql://${DB_USUARIO}:${DB_SENHA}@tcp(${DB_HOST}:${DB_PORTA})/${DB_NOME}",
-      "up"
-    ]
-    volumes:
-      - ./migrations:/migrations
     depends_on:
       - mysql
-
+    volumes:
+      - ./migrations:/migrations
   app:
     build: .
     container_name: app
